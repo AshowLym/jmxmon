@@ -1,15 +1,14 @@
 package com.stephan.tof.jmxmon;
 
-import java.io.File;
-import java.io.IOException;
-
+import com.stephan.tof.jmxmon.bean.JVMContext;
+import com.stephan.tof.jmxmon.bean.JacksonUtil;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.stephan.tof.jmxmon.bean.JVMContext;
-import com.stephan.tof.jmxmon.bean.JacksonUtil;
+import java.io.File;
+import java.io.IOException;
 
 public class Config {
 
@@ -27,6 +26,8 @@ public class Config {
 	
 	private String jmxHost;
 	private int[] jmxPorts;
+
+    private boolean runOnce;
 	
 	private Config(){}
 	
@@ -67,7 +68,9 @@ public class Config {
 		for (int i = 0; i < jmxPortArray.length; i++) {
 			jmxPorts[i] = Integer.parseInt(jmxPortArray[i]);
 		}
-		
+
+		this.runOnce = config.getBoolean("runOnce", false);
+
 		logger.info("init config ok");
 	}
 	
@@ -127,4 +130,13 @@ public class Config {
 	public JVMContext getJvmContext() {
 		return jvmContext;
 	}
+
+    /**
+     * this monitor will run once then return,
+     * or do scheduled work
+     * @return
+     */
+    public boolean isRunOnce() {
+        return runOnce;
+    }
 }

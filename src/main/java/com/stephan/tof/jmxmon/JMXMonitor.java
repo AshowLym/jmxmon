@@ -1,15 +1,5 @@
 package com.stephan.tof.jmxmon;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.stephan.tof.jmxmon.HttpClientUtils.HttpResult;
 import com.stephan.tof.jmxmon.JVMGCGenInfoExtractor.GCGenInfo;
 import com.stephan.tof.jmxmon.JVMMemoryUsedExtractor.MemoryUsedInfo;
@@ -17,6 +7,15 @@ import com.stephan.tof.jmxmon.JVMThreadExtractor.ThreadInfo;
 import com.stephan.tof.jmxmon.bean.FalconItem;
 import com.stephan.tof.jmxmon.bean.JacksonUtil;
 import com.stephan.tof.jmxmon.jmxutil.ProxyClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class JMXMonitor {
 
@@ -33,15 +32,20 @@ public class JMXMonitor {
 			logger.error(e.getMessage(), e);
 			throw new IllegalStateException(e);	// 抛出异常便于外部脚本感知
 		}
-		
-		ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-		executor.scheduleAtFixedRate(new Runnable() {
-			@Override
-			public void run() {
-				runTask();
-			}
-		}, 0, Config.I.getStep(), TimeUnit.SECONDS);
-		
+
+		if (Config.I.isRunOnce()) {
+		    logger.info("Run JMXMonitor once");
+            runTask();
+		} else {
+			logger.info("Scheduled run JMXMonitor");
+			ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+			executor.scheduleAtFixedRate(new Runnable() {
+				@Override
+				public void run() {
+					runTask();
+				}
+			}, 0, Config.I.getStep(), TimeUnit.SECONDS);
+		}
 	}
 
 	/**
