@@ -1,0 +1,6 @@
+Usage:
+run: run start.sh at source dir or 'java -jar xxxx.jar conf.properties' directly
+
+rebuild: run docker-env/build.sh
+
+mod: modify src/main/resources/conf.properties then rebuild
